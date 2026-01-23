@@ -8,6 +8,8 @@
 
  #include "LCD.h"
  #include <avr/io.h>
+ #include <util/delay.h>
+
 
  // Definición de pines
  #define LCD_PORT        PORTD

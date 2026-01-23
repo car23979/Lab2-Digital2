@@ -7,10 +7,18 @@
 
 // Pantalla LCD Y ACD
 
-#define  F_CPU 16000000UL
+#define F_CPU 16000000UL
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+#include <stdint.h>
 #include "ADC.h"
 #include "LCD.h"
 
+void voltaje_to_string(uint16_t adc_value, char *buffer) {
+	// Calcular voltaje: V = (adc_value * 5.0) / 1023
+	// Usar enteros para evitar float: multiplicar por 5000 y dividir por 1023
+	uint32_t mv = (adc_value * 5000UL) / 1023;
+	
+	// Separar dígitos
+	uint8_t unidades = mv / 1000;
+	uint8_t decimas = (mv % 1000) / 100;
+	uint8_t centesimas = (mv % 100) / 10;
