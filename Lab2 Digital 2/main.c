@@ -13,6 +13,7 @@
 #include "ADC.h"
 #include "LCD.h"
 
+// Mostrar Voltaje
 void voltaje_to_string(uint16_t adc_value, char *buffer) {
 	// Calcular voltaje: V = (adc_value * 5.0) / 1023
 	// Usar enteros para evitar float: multiplicar por 5000 y dividir por 1023
@@ -31,5 +32,21 @@ void voltaje_to_string(uint16_t adc_value, char *buffer) {
 	buffer [4] = 'V';
 	buffer [5] = '\0';
 	
+}
+
+int main(void) {
+	char display_buffer[6];
+	uint16_t adc_result;
 	
+	// Inicializador de perifericos
+	adc_init();
+	lcd_init();
 	
+	// Mensaje inicial
+	lcd_gotoxy(0, 0);
+	lcd_puts("Voltaje S1:");
+	
+	while (1) {
+		// Leer canal ADC0
+	}
+}
