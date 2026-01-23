@@ -8,59 +8,91 @@
 
  #include "LCD.h"
  
- // Definición de pines (ajustar según conexión)
+ // Definición de pines
  #define LCD_PORT        PORTD
  #define LCD_DDR         DDRD
  #define LCD_RS          PIND0
  #define LCD_EN          PIND1
+ 
+ // D0-D7 conectados a PD2-PD9
 
- // Función para inicializar LCD en modo para 4 bits
- void initLCD4bits(void)
- DDRC |= (1)
+ void lcd_pulse_enable(void) {
+	 LCD_PORT |= (1 << LCD_EN);
+	 _delay_us(1);
+	 LCD_PORT &= ~(1 << LCD_EN);
+	 _delay_us(100);
+ }
 
-
-
-
- /////////////////////////////////////////
- // Function Set
-
-
- // Clear Display
-
-
- // Función para enviar un comando
- void LCD_CMD(char a) {
-	 // RS = 0; // => RS = 1
+ void lcd_command(uint8_t cmd) {
+	 // RS en bajo para comando
+	 LCD_PORT &= ~(1 << LCD_RS);
 	 
+	 // Colocar comando en bus de datos
+	 LCD_PORT = (LCD_PORT & 0x03) | (cmd & 0xFC);
+	 lcd_pulse_enable();
  }
 
- // Función para colocar en el puerto un valor
- void LCD_Port(char a) {
-	 if (a & 1)
-	 // D4 = 1;
-	 PORTB |
-	 if (a & 2)
-	 // D5 = 1
- }
-
- // fUNCION PARA ENVIAR UN CARACTER
- void LCD_WRITE_CHAR(char c) {
-	 char Cbajo, Calto;
-	 Cbajo = c & 0x0F;
-	 Calto = c & ;
+ void lcd_data(uint8_t data) {
+	 // RS en alto para dato
+	 LCD_PORT |= (1 << LCD_RS);
 	 
+	 // Colocar dato en bus de datos
+	 LCD_PORT = (LCD_PORT & 0x03) | (data & 0xFC);
+	 lcd_pulse_enable();
  }
 
- // Función para enviar una cadena
- void
+ void lcd_init(void) {
+	 // Configurar puertos como salida
+	 LCD_DDR |= 0xFF;
+	 
+	 // Esperar inicialización de LCD
+	 _delay_ms(50);
+	 
+	 // Secuencia de inicialización 8-bit
+	 lcd_command(0x30);
+	 _delay_ms(5);
+	 lcd_command(0x30);
+	 _delay_us(150);
+	 lcd_command(0x30);
+	 
+	 // Configurar LCD: 8-bit, 2 líneas, 5x8
+	 lcd_command(LCD_8BIT);
+	 _delay_us(50);
+	 
+	 // Display ON, cursor OFF
+	 lcd_command(LCD_ON);
+	 _delay_us(50);
+	 
+	 // Modo de entrada
+	 lcd_command(LCD_ENTRY);
+	 _delay_us(50);
+	 
+	 // Limpiar display
+	 lcd_clear();
+ }
 
- // Desplazamiento hacia la izquierda
+ void lcd_clear(void) {
+	 lcd_command(LCD_CLEAR);
+	 _delay_ms(2);
+ }
 
- // Establecer el cursor
- void LCD_Set_Cursor(char c, char f) {
-	 char temp, talto, tbajo;
-	 if (f == 1) {
-		 temp = 0x80 + 1c;
-		 
+ void lcd_gotoxy(uint8_t x, uint8_t y) {
+	 uint8_t address;
+	 
+	 if (y == 0)
+	 address = 0x80 + x;    // Primera línea
+	 else
+	 address = 0xC0 + x;    // Segunda línea
+	 
+	 lcd_command(address);
+ }
+
+ void lcd_puts(const char *str) {
+	 while (*str) {
+		 lcd_data(*str++);
 	 }
+ }
+
+ void lcd_putc(char c) {
+	 lcd_data(c);
  }
