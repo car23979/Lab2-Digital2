@@ -10,6 +10,7 @@
 #define F_CPU 16000000UL
 #include <avr/io.h>
 #include <stdint.h>
+#include <util/delay.h>
 #include "ADC.h"
 #include "LCD.h"
 
