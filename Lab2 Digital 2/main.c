@@ -48,5 +48,19 @@ int main(void) {
 	
 	while (1) {
 		// Leer canal ADC0
+		adc_result = adc_read(0);
+		
+		// Convertir a string con formato de voltaje
+		voltaje_to_string(adc_result, display_buffer);
+		
+		// Mostrar en LCD (segunda linea)
+		lcd_gotoxy(0, 1);
+		lcd_puts(display_buffer);
+		lcd_puts("   ");			// Limpiar residuos
+		
+		// Delay para estabilidad
+		_delay_ms(200);
 	}
+	
+	return 0;
 }
