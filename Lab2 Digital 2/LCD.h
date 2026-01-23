@@ -18,5 +18,13 @@
 #define LCD_ON			0x0C	// Comando para encender pantalla
 #define LCD_ENTRY		0x06	// Comando para Incremento
 
+void lcd_init(void);
+void lcd_command(uint8_t cmd);
+void lcd_data(uint8_t data);
+void lcd_clear(void);
+void lcd_gotoxy(uint8_t x, uint8_t y);
+void lcd_puts(const char *str);
+void lcd_putc(char c);
+
 
 #endif /* LCD_H_ */
