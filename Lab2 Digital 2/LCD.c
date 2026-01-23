@@ -2,12 +2,13 @@
  * LCD.c
  *
  * Created: 22/01/2026 07:05:44 p. m.
- *  Author: Admin
+ *  Author: David Carranza
  */ 
 
 
  #include "LCD.h"
- 
+ #include <avr/io.h>
+
  // Definición de pines
  #define LCD_PORT        PORTD
  #define LCD_DDR         DDRD

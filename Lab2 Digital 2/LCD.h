@@ -2,7 +2,7 @@
  * LCD.h
  *
  * Created: 22/01/2026 07:05:59 p. m.
- *  Author: Admin
+ *  Author: David Carranza
  */ 
 
 

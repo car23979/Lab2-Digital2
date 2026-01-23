@@ -2,7 +2,7 @@
  * ADC.h
  *
  * Created: 22/01/2026 03:42:41 p. m.
- *  Author: Admin
+ *  Author: David Carranza
  */ 
 
 
@@ -13,9 +13,6 @@
 
 void adc_init(void);
 uint16_t adc_read(uint8_t channel);
-
-#endif
-
 
 
 #endif /* ADC_H_ */
