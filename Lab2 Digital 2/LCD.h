@@ -9,7 +9,11 @@
 #ifndef LCD_H_
 #define LCD_H_
 
+#include <stdint.h>
 
+// Comandos LCD
+#define LCD_clear		0x01
+#define LCD_
 
 
 
