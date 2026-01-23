@@ -7,6 +7,12 @@
 
 
  #include "LCD.h"
+ 
+ // Definición de pines (ajustar según conexión)
+ #define LCD_PORT        PORTD
+ #define LCD_DDR         DDRD
+ #define LCD_RS          PIND0
+ #define LCD_EN          PIND1
 
  // Función para inicializar LCD en modo para 4 bits
  void initLCD4bits(void)
