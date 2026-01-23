@@ -22,3 +22,14 @@ void voltaje_to_string(uint16_t adc_value, char *buffer) {
 	uint8_t unidades = mv / 1000;
 	uint8_t decimas = (mv % 1000) / 100;
 	uint8_t centesimas = (mv % 100) / 10;
+	
+	// Formatear String "0.00V"
+	buffer [0] = unidades + '0';
+	buffer [1] = '.';
+	buffer [2] = decimas + '0';
+	buffer [3] = centesimas + '0';
+	buffer [4] = 'V';
+	buffer [5] = '\0';
+	
+	
+	
