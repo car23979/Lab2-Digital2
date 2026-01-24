@@ -5,97 +5,129 @@
  *  Author: David Carranza
  */ 
 
+#define F_CPU 16000000UL
 
- #include "LCD.h"
- #include <avr/io.h>
- #include <util/delay.h>
+#include "LCD.h"
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+// Pulso en Enable
+static void LCD_PulseEnable(void) {
+	PORTD |= (1 << LCD_EN_PIN);
+	_delay_us(1);
+	PORTD &= ~(1 << LCD_EN_PIN);
+	_delay_us(100);
+}
 
- // Definición de pines
- #define LCD_PORT        PORTD
- #define LCD_DDR         DDRD
- #define LCD_RS          PIND0
- #define LCD_EN          PIND1
- 
- // D0-D7 conectados a PD2-PD9
+// Enviar comando (8 bits)
+void LCD_Command(uint8_t cmd) {
+	// RS en bajo para comando
+	PORTD &= ~(1 << LCD_RS_PIN);
+	
+	// Colocar comando en bus de datos (D4-D7)
+	LCD_DATA_PORT = (LCD_DATA_PORT & 0x0F) | (cmd & 0xF0);
+	LCD_PulseEnable();
+	
+	// Enviar nibble bajo (para modo 8 bits, enviar ambos nibbles)
+	LCD_DATA_PORT = (LCD_DATA_PORT & 0x0F) | ((cmd & 0x0F) << 4);
+	LCD_PulseEnable();
+	
+	// Delay para comandos que necesitan más tiempo
+	if (cmd == LCD_CLEAR_DISPLAY || cmd == LCD_RETURN_HOME) {
+		_delay_ms(2);
+		} else {
+		_delay_us(50);
+	}
+}
 
- void lcd_pulse_enable(void) {
-	 LCD_PORT |= (1 << LCD_EN);
-	 _delay_us(1);
-	 LCD_PORT &= ~(1 << LCD_EN);
-	 _delay_us(100);
- }
+// Enviar dato (8 bits)
+void LCD_Data(uint8_t data) {
+	// RS en alto para dato
+	PORTD |= (1 << LCD_RS_PIN);
+	
+	// Colocar dato en bus de datos (D4-D7)
+	LCD_DATA_PORT = (LCD_DATA_PORT & 0x0F) | (data & 0xF0);
+	LCD_PulseEnable();
+	
+	// Enviar nibble bajo
+	LCD_DATA_PORT = (LCD_DATA_PORT & 0x0F) | ((data & 0x0F) << 4);
+	LCD_PulseEnable();
+	
+	_delay_us(50);
+}
 
- void lcd_command(uint8_t cmd) {
-	 // RS en bajo para comando
-	 LCD_PORT &= ~(1 << LCD_RS);
-	 
-	 // Colocar comando en bus de datos
-	 LCD_PORT = (LCD_PORT & 0x03) | (cmd & 0xFC);
-	 lcd_pulse_enable();
- }
+// Inicializar LCD en modo 8 bits
+void LCD_Init(void) {
+	// Configurar pines como salidas
+	DDRD |= (1 << LCD_RS_PIN) | (1 << LCD_EN_PIN) | LCD_DATA_MASK;
+	
+	// Esperar inicialización del LCD
+	_delay_ms(50);
+	
+	// Secuencia de inicialización 8 bits
+	LCD_Command(0x30);
+	_delay_ms(5);
+	LCD_Command(0x30);
+	_delay_us(150);
+	LCD_Command(0x30);
+	_delay_us(50);
+	
+	// Configurar LCD: 8 bits, 2 líneas, 5x8 puntos
+	LCD_Command(LCD_8BIT_2LINE);
+	_delay_us(50);
+	
+	// Display ON, cursor OFF
+	LCD_Command(LCD_DISPLAY_ON);
+	_delay_us(50);
+	
+	// Modo de entrada (incremento, no shift)
+	LCD_Command(LCD_ENTRY_MODE);
+	_delay_us(50);
+	
+	// Limpiar display
+	LCD_Clear();
+}
 
- void lcd_data(uint8_t data) {
-	 // RS en alto para dato
-	 LCD_PORT |= (1 << LCD_RS);
-	 
-	 // Colocar dato en bus de datos
-	 LCD_PORT = (LCD_PORT & 0x03) | (data & 0xFC);
-	 lcd_pulse_enable();
- }
+// Limpiar display
+void LCD_Clear(void) {
+	LCD_Command(LCD_CLEAR_DISPLAY);
+	_delay_ms(2);
+}
 
- void lcd_init(void) {
-	 // Configurar puertos como salida
-	 LCD_DDR |= 0xFF;
-	 
-	 // Esperar inicialización de LCD
-	 _delay_ms(50);
-	 
-	 // Secuencia de inicialización 8-bit
-	 lcd_command(0x30);
-	 _delay_ms(5);
-	 lcd_command(0x30);
-	 _delay_us(150);
-	 lcd_command(0x30);
-	 
-	 // Configurar LCD: 8-bit, 2 líneas, 5x8
-	 lcd_command(LCD_8BIT);
-	 _delay_us(50);
-	 
-	 // Display ON, cursor OFF
-	 lcd_command(LCD_ON);
-	 _delay_us(50);
-	 
-	 // Modo de entrada
-	 lcd_command(LCD_ENTRY);
-	 _delay_us(50);
-	 
-	 // Limpiar display
-	 lcd_clear();
- }
+// Posicionar cursor
+void LCD_SetCursor(uint8_t x, uint8_t y) {
+	uint8_t address;
+	
+	if (y == 0) {
+		address = 0x80 + x;  // Primera línea
+		} else {
+		address = 0xC0 + x;  // Segunda línea
+	}
+	
+	LCD_Command(address);
+}
 
- void lcd_clear(void) {
-	 lcd_command(LCD_CLEAR);
-	 _delay_ms(2);
- }
+// Imprimir string
+void LCD_PrintString(const char *str) {
+	while (*str) {
+		LCD_Data(*str++);
+	}
+}
 
- void lcd_gotoxy(uint8_t x, uint8_t y) {
-	 uint8_t address;
-	 
-	 if (y == 0)
-	 address = 0x80 + x;    // Primera línea
-	 else
-	 address = 0xC0 + x;    // Segunda línea
-	 
-	 lcd_command(address);
- }
+// Imprimir carácter
+void LCD_PrintChar(char c) {
+	LCD_Data(c);
+}
 
- void lcd_puts(const char *str) {
-	 while (*str) {
-		 lcd_data(*str++);
-	 }
- }
-
- void lcd_putc(char c) {
-	 lcd_data(c);
- }
+// Imprimir float con formato específico
+void LCD_PrintFloat(float value, uint8_t decimalPlaces) {
+	char buffer[10];
+	
+	// Convertir float a string con formato
+	// Para "0.00V", necesitamos 2 decimales
+	dtostrf(value, 4, decimalPlaces, buffer);  // 4 = ancho total incluyendo punto
+	
+	LCD_PrintString(buffer);
+}

@@ -6,13 +6,13 @@
  */ 
 
 
-#ifndef ADC_H_
-#define ADC_H_
+#ifndef ADC_H
+#define ADC_H
 
 #include <stdint.h>
 
-void adc_init(void);
-uint16_t adc_read(uint8_t channel);
+void ADC_Init(void);
+uint16_t ADC_Read(uint8_t channel);
+float ADC_ReadVoltage(uint8_t channel);
 
-
-#endif /* ADC_H_ */
+#endif

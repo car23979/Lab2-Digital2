@@ -7,60 +7,59 @@
 
 // Pantalla LCD Y ACD
 
-#define F_CPU 16000000UL
+#define F_CPU 16000000UL  // 16 MHz para Arduino Nano
 #include <avr/io.h>
-#include <stdint.h>
 #include <util/delay.h>
 #include "ADC.h"
 #include "LCD.h"
 
-// Mostrar Voltaje
-void voltaje_to_string(uint16_t adc_value, char *buffer) {
-	// Calcular voltaje: V = (adc_value * 5.0) / 1023
-	// Usar enteros para evitar float: multiplicar por 5000 y dividir por 1023
-	uint32_t mv = (adc_value * 5000UL) / 1023;
+// Función para convertir voltaje a string con formato "0.00V"
+void DisplayVoltage(float voltage) {
+	uint8_t int_part = (uint8_t)voltage;
+	uint8_t dec_part = (uint8_t)((voltage - int_part) * 100);
 	
-	// Separar dígitos
-	uint8_t unidades = mv / 1000;
-	uint8_t decimas = (mv % 1000) / 100;
-	uint8_t centesimas = (mv % 100) / 10;
+	// Posicionar en segunda línea, columna 0
+	LCD_SetCursor(0, 1);
 	
-	// Formatear String "0.00V"
-	buffer [0] = unidades + '0';
-	buffer [1] = '.';
-	buffer [2] = decimas + '0';
-	buffer [3] = centesimas + '0';
-	buffer [4] = 'V';
-	buffer [5] = '\0';
-	
+	// Mostrar formato "0.00V"
+	LCD_PrintChar(int_part + '0');      // Unidad
+	LCD_PrintChar('.');                 // Punto decimal
+	LCD_PrintChar((dec_part / 10) + '0');  // Décimas
+	LCD_PrintChar((dec_part % 10) + '0');  // Centésimas
+	LCD_PrintChar('V');                 // Unidad
 }
 
 int main(void) {
-	char display_buffer[6];
-	uint16_t adc_result;
+	float voltage;
+	uint16_t adc_value;
 	
-	// Inicializador de perifericos
-	adc_init();
-	lcd_init();
+	// Inicializar periféricos
+	ADC_Init();
+	LCD_Init();
 	
 	// Mensaje inicial
-	lcd_gotoxy(0, 0);
-	lcd_puts("Voltaje S1:");
+	LCD_SetCursor(0, 0);
+	LCD_PrintString("POT S1 VOLTAJE:");
 	
-	while (1) {
-		// Leer canal ADC0
-		adc_result = adc_read(0);
+	// Variable para suavizado (filtro pasa-bajos)
+	float filtered_voltage = 0.0;
+	const float alpha = 0.2;  // Factor de suavizado (0.1 a 0.3)
+	
+	while(1) {
+		// Leer ADC del canal 0 (S1 en PC0/A0)
+		adc_value = ADC_Read(1);
 		
-		// Convertir a string con formato de voltaje
-		voltaje_to_string(adc_result, display_buffer);
+		// Convertir a voltaje: V = (ADC * 5.0) / 1023
+		voltage = (adc_value * 5.0) / 1023.0;
 		
-		// Mostrar en LCD (segunda linea)
-		lcd_gotoxy(0, 1);
-		lcd_puts(display_buffer);
-		lcd_puts("   ");			// Limpiar residuos
+		// Aplicar filtro pasa-bajos para suavizar lectura
+		filtered_voltage = alpha * voltage + (1 - alpha) * filtered_voltage;
 		
-		// Delay para estabilidad
-		_delay_ms(200);
+		// Mostrar voltaje en formato "0.00V"
+		DisplayVoltage(filtered_voltage);
+		
+		// Esperar antes de siguiente lectura
+		_delay_ms(100);  // 10 Hz de actualización
 	}
 	
 	return 0;
