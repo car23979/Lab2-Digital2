@@ -5,7 +5,7 @@
  *  Author: David Carranza
  */ 
 
-#define F_CPU 16000000UL  // 16 MHz
+#include "config.h"
 #include "ADC.h"
 #include <avr/io.h>
 #include <util/delay.h>  
@@ -15,8 +15,8 @@ void ADC_Init(void) {
 	ADMUX = (1 << REFS0);
 	
 	// Habilitar ADC y prescaler de 128 (16MHz/128 = 125kHz)
-	// Frecuencia recomendada: 50-200kHz para 10 bits de resolución
-	ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+	ADCSRA = (1 << ADEN) | (1 << ADPS2) | 
+			 (1 << ADPS1) | (1 << ADPS0);
 	
 	// Primera lectura descartada (para estabilizar)
 	ADC_Read(0);
@@ -40,11 +40,4 @@ uint16_t ADC_Read(uint8_t channel) {
 	
 	// Retornar valor de 10 bits
 	return ADC;
-}
-
-float ADC_ReadVoltage(uint8_t channel) {
-	uint16_t adc_value = ADC_Read(channel);
-	// Voltaje = (ADC_value * Vref) / 1023
-	// Vref = 5V para AVc
-	return (adc_value * 5.0) / 1023.0;
 }
