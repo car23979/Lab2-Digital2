@@ -31,9 +31,7 @@ void LCD_Init(void);
 void LCD_Command(uint8_t cmd);
 void LCD_Data(uint8_t data);
 void LCD_Clear(void);
-void LCD_SetCursor(uint8_t x, uint8_t y);
+void LCD_SetCursor(uint8_t col, uint8_t row);
 void LCD_PrintString(const char *str);
-void LCD_PrintChar(char c);
-void LCD_PrintFloat(float value, uint8_t decimalPlaces);
 
 #endif
