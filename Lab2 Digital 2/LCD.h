@@ -12,20 +12,19 @@
 
 #include <stdint.h>
 
-// Definición de pines (ajustar según conexión)
-#define LCD_RS_PIN     PIND2  // D2
-#define LCD_EN_PIN     PIND3  // D3
-// Pines de datos D4-D7 en puerto D
-#define LCD_DATA_PORT  PORTD
-#define LCD_DATA_DDR   DDRD
-#define LCD_DATA_MASK  0xF0  // D4-D7 (bits 4-7)
+// Definición de pines
+// Pines de Control
+#define LCD_RS_PORT		PORTB
+#define LCD_RS_DDR		DDRB
+#define LCD_RS_PIN		PINB0
 
-// Comandos LCD
-#define LCD_CLEAR_DISPLAY   0x01
-#define LCD_RETURN_HOME     0x02
-#define LCD_8BIT_2LINE      0x38
-#define LCD_DISPLAY_ON      0x0C
-#define LCD_ENTRY_MODE      0x06
+#define LCD_EN_PORT		PORTB
+#define LCD_EN_PORT		DDRB
+#define LCD_EN_PIN		PINB1
+
+// Bus de datos (D0-D7)
+#define LCD_DATA_PORT	PORTD
+#define LCD_DATA_DDR	DDRD
 
 // Funciones
 void LCD_Init(void);
