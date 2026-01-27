@@ -45,6 +45,6 @@ uint16_t ADC_Read(uint8_t channel) {
 float ADC_ReadVoltage(uint8_t channel) {
 	uint16_t adc_value = ADC_Read(channel);
 	// Voltaje = (ADC_value * Vref) / 1023
-	// Vref = 5V para AVcc
+	// Vref = 5V para AVc
 	return (adc_value * 5.0) / 1023.0;
 }
