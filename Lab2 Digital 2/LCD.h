@@ -19,7 +19,7 @@
 #define LCD_RS_PIN		PINB0
 
 #define LCD_EN_PORT		PORTB
-#define LCD_EN_PORT		DDRB
+#define LCD_EN_DDR		DDRB
 #define LCD_EN_PIN		PINB1
 
 // Bus de datos (D0-D7)
