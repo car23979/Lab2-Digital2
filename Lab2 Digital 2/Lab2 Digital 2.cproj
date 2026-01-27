@@ -126,6 +126,9 @@
     <Compile Include="ADC.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="config.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="LCD.c">
       <SubType>compile</SubType>
     </Compile>
