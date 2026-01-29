@@ -28,12 +28,26 @@
 #define LCD_DDRD  DDRD
 #define	PORTD_MASK 0xFC		// Se reservan PD0 y PD1 para la UART (1111 1100)
 
+// Salidas D0 y D1
+#define	LCD_PORTB PORTB
+#define	LCD_DDRB  DDRB
+#define	PORTB_MASK 0x03		// Mascara para (0000 0011)
+
+//Habilitar y desabilitar RS, RW y Enable
+#define	ENABLE_1()	LCD_CONTROL |= (1<<PIN_ENABLE)
+#define	ENABLE_0()	LCD_CONTROL &= ~(1<<PIN_ENABLE)
+#define	RS_0()		LCD_CONTROL &= ~(1<<PIN_RS)
+#define	RS_1()		LCD_CONTROL |= (1<<PIN_RS)
+#define	WR_WRITE()	LCD_CONTROL &= ~(1<<PIN_WR)
+#define	WR_READ()	LCD_CONTROL |= (1<<PIN_WR)
+
 // Funciones
-void LCD_Init(void);
-void LCD_Command(uint8_t cmd);
-void LCD_Data(uint8_t data);
-void LCD_Clear(void);
-void LCD_SetCursor(uint8_t col, uint8_t row);
-void LCD_PrintString(const char *str);
+void INICIAR_LCD(void); //INICIAR EL LCD
+void COMANDO_LCD(uint8_t COMANDO); //Manda un comando
+void LCD_WRITE_CHAR(char DATO); //Manda una Letra
+void LCD_PORT(char DATO); //Manda los datos al PORTD y PORTB
+void LCD_LECTURA(void); //
+void LCD_WRITE_STRING(char *TEXTO ); //Manda un texto
+void CURSOR(uint8_t FILA, uint8_t COLUMNA); //Mueve el cursor
 
 #endif
