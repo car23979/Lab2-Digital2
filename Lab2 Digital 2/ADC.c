@@ -5,39 +5,31 @@
  *  Author: David Carranza
  */ 
 
-#include "config.h"
 #include "ADC.h"
-#include <avr/io.h>
-#include <util/delay.h>  
 
-void ADC_Init(void) {
+
+void ADC_CONF() {
 	// Configurar referencia AVcc (5V) y ajuste a derecha
 	ADMUX = (1 << REFS0);
 	
 	// Habilitar ADC y prescaler de 128 (16MHz/128 = 125kHz)
 	ADCSRA = (1 << ADEN) | (1 << ADPS2) | 
-			 (1 << ADPS1) | (1 << ADPS0);
+			 (1 << ADPS1);
 	
 	// Primera lectura descartada (para estabilizar)
 	ADC_Read(0);
 }
 
-uint16_t ADC_Read(uint8_t channel) {
-	// Limitar canal a 0-7
-	channel &= 0x07;
+
+// Leer el canal
+uint16_t ADC_READ(uint8_t canal) {
 	
 	// Seleccionar canal y mantener configuración de referencia
-	ADMUX = (ADMUX & 0xF0) | channel;
-	
-	// Pequeño delay para estabilizar multiplexor
-	_delay_us(10);
-	
+	ADMUX = (ADMUX & 0xF0) | (canal & 0x0F);
 	// Iniciar conversión
 	ADCSRA |= (1 << ADSC);
-	
 	// Esperar fin de conversión
 	while (ADCSRA & (1 << ADSC));
-	
 	// Retornar valor de 10 bits
 	return ADC;
 }

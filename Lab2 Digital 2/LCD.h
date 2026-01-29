@@ -16,11 +16,11 @@
 // Pines de Control
 #define LCD_RS_PORT		PORTB
 #define LCD_RS_DDR		DDRB
-#define LCD_RS_PIN		PINB0
+#define LCD_RS_PIN		PB0
 
 #define LCD_EN_PORT		PORTB
 #define LCD_EN_DDR		DDRB
-#define LCD_EN_PIN		PINB1
+#define LCD_EN_PIN		PB1
 
 // Bus de datos (D0-D7)
 #define LCD_DATA_PORT	PORTD

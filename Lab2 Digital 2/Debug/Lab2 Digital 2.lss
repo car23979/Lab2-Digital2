@@ -427,9 +427,9 @@ int main(void) {
  294:	0e 94 b9 00 	call	0x172	; 0x172 <LCD_PrintString>
 	
 	while (1) {
-		// Leer ADC del canal 0 (S1 en PC0/A0)
-		adc_value = ADC_Read(0);
- 298:	80 e0       	ldi	r24, 0x00	; 0
+		// Leer ADC del canal 1 (S1 en PC1/A1)
+		adc_value = ADC_Read(1);
+ 298:	81 e0       	ldi	r24, 0x01	; 1
  29a:	0e 94 4b 00 	call	0x96	; 0x96 <ADC_Read>
 		// Mostrar voltaje en formato "0.00V"
 		DisplayVoltage(adc_value);

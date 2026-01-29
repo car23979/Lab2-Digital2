@@ -39,8 +39,8 @@ int main(void) {
 	LCD_PrintString("POT S1 VOLTAJE:");
 	
 	while (1) {
-		// Leer ADC del canal 0 (S1 en PC0/A0)
-		adc_value = ADC_Read(0);
+		// Leer ADC del canal 1 (S1 en PC1/A1)
+		adc_value = ADC_Read(1);
 		// Mostrar voltaje en formato "0.00V"
 		DisplayVoltage(adc_value);
 		// Esperar antes de siguiente lectura
