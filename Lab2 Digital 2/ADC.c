@@ -12,12 +12,11 @@ void ADC_CONF() {
 	// Configurar referencia AVcc (5V) y ajuste a derecha
 	ADMUX = (1 << REFS0);
 	
-	// Habilitar ADC y prescaler de 128 (16MHz/128 = 125kHz)
-	ADCSRA = (1 << ADEN) | (1 << ADPS2) | 
-			 (1 << ADPS1);
+	// Habilitar ADC y prescaler de 64
+	ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1);
 	
 	// Primera lectura descartada (para estabilizar)
-	ADC_Read(0);
+	ADC_READ(0);
 }
 
 

@@ -126,9 +126,6 @@
     <Compile Include="ADC.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="config.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="LCD.c">
       <SubType>compile</SubType>
     </Compile>
@@ -136,6 +133,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="UART.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="UART.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
