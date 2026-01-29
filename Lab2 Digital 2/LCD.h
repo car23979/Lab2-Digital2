@@ -9,22 +9,24 @@
 #ifndef LCD_H_
 #define LCD_H_
 
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <stdlib.h>
+#include <util/delay.h>
 
-#include <stdint.h>
 
 // Definición de pines
 // Pines de Control
-#define LCD_RS_PORT		PORTB
-#define LCD_RS_DDR		DDRB
-#define LCD_RS_PIN		PB0
+#define LCD_CONTROL	PORTB
+#define CONTROL_DDR DDRB
+#define PIN_RS		PINB4
+#define PIN_WR		PINB3
+#define PIN_ENABLE	PINB2
 
-#define LCD_EN_PORT		PORTB
-#define LCD_EN_DDR		DDRB
-#define LCD_EN_PIN		PB1
-
-// Bus de datos (D0-D7)
-#define LCD_DATA_PORT	PORTD
-#define LCD_DATA_DDR	DDRD
+// Salidas D2 - D7
+#define LCD_PORTD PORTD
+#define LCD_DDRD  DDRD
+#define	PORTD_MASK 0xFC		// Se reservan PD0 y PD1 para la UART (1111 1100)
 
 // Funciones
 void LCD_Init(void);
