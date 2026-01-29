@@ -65,18 +65,25 @@ int main(void) {
 		PARTE_ENTERA = LECTURA_ADC0 / 1000;
 		PARTE_DECIMAL = (LECTURA_ADC0 % 1000) / 10;
 		
-		CURSOR(1,4);
-		sprintf(buffer, "%d.%02d V   ", PARTE_ENTERA, PARTE_DECIMAL);
+		CURSOR(0,1);
+		LCD_WRITE_STRING("S1:");
+		
+		CURSOR(1,0);
+		sprintf(buffer, "%d.%02dV   ", PARTE_ENTERA, PARTE_DECIMAL);
 		LCD_WRITE_STRING(buffer);
 		
 		// S2
+		CURSOR(0,7);
+		LCD_WRITE_STRING("S2:");
 		valor_adc1 = ADC_READ(5); // Canal A5
-		CURSOR(1, 11);  // Posición para S2
+		CURSOR(1, 5);  // Posición para S2
 		sprintf(buffer, "%4d", valor_adc1);
 		LCD_WRITE_STRING(buffer);
 		
 		// S3
-		CURSOR(1, 16);  // Posición para S3
+		CURSOR(0,12);
+		LCD_WRITE_STRING("S3:");
+		CURSOR(1, 11);  // Posición para S3
 		sprintf(buffer, "%4d", contador);
 		LCD_WRITE_STRING(buffer);
 		
