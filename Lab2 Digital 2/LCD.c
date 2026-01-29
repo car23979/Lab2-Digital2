@@ -5,69 +5,88 @@
  *  Author: David Carranza
  */ 
 
-#include "config.h"
 #include "LCD.h"
-#include <avr/io.h>
-#include <util/delay.h>
 
-// Pulso en Enable
-static void LCD_PulseEnable(void) {
-	LCD_EN_PORT |= (1 << LCD_EN_PIN);
-	_delay_us(1);
-	LCD_EN_PORT &= ~(1 << LCD_EN_PIN);
-	_delay_ms(2);
-}
-
-// Enviar comando (8 bits)
-void LCD_Command(uint8_t cmd) {
-	// RS en bajo para comando
-	LCD_RS_PORT &= ~(1 << LCD_RS_PIN);
-	// Colocar comando en bus de datos (D4-D7)
-	LCD_DATA_PORT = cmd;
-	LCD_PulseEnable();
-}
-
-// Enviar dato (8 bits)
-void LCD_Data(uint8_t data) {
-	// RS en alto para dato
-	LCD_RS_PORT |= (1 << LCD_RS_PIN);
-	// Colocar dato en bus de datos (D4-D7)
-	LCD_DATA_PORT = data;
-	LCD_PulseEnable();
-}
-
-// Inicializar LCD en modo 8 bits
-void LCD_Init(void) {
-	// Configurar pines como salidas
-	LCD_RS_DDR |= (1 << LCD_RS_PIN);
-	LCD_EN_DDR |= (1 << LCD_EN_PIN);
-	LCD_DATA_DDR = 0xFF;
-	// Esperar inicialización del LCD
-	_delay_ms(50);
+void LCD_PORT(char DATO){
 	
-	// Secuencia de inicialización 8 bits
-	LCD_Command(0x38);	// 8 bits, 2 lineas
-	LCD_Command(0x0C);	// Display On
-	LCD_Command(0x06);	// Auto incremento
-	LCD_Command(0x01);	// Clear
+	//PORTD D2 - D7
+	uint8_t PORTD_TEMP = (LCD_PORTD & ~PORTD_MASK) | (DATO & PORTD_MASK);
+	LCD_PORTD = PORTD_TEMP;
+	
+	//PORTB D0 - D1
+	uint8_t PORTB_TEMP = (LCD_PORTB & ~PORTB_MASK) | (DATO & PORTB_MASK);
+	LCD_PORTB = PORTB_TEMP;
+}
+
+// Lectura
+void LCD_LECTURA(void){
+	ENABLE_1();
+	_delay_us(1);
+	ENABLE_0();
+	_delay_us(50);
+}
+
+void INICIAR_LCD(void){
+	// Configuración de salidas
+	//Controles
+	CONTROL_DDR |= (1<<PIN_RS)|(1<<PIN_WR)|(1<<PIN_ENABLE);
+	LCD_DDRD |= PORTD_MASK;
+	LCD_DDRB |= PORTB_MASK;
+	
+	// Estado inicial
+	LCD_CONTROL &= ~((1<<PIN_RS)|(1<<PIN_WR)|(1<<PIN_ENABLE));
+	_delay_ms(50);
+	COMANDO_LCD(0x38); //MODO 8 bits (0011 1000)
+	_delay_ms(5);
+	COMANDO_LCD(0x38); //MODO 8 bits (0011 1000)
+	_delay_ms(200);
+	COMANDO_LCD(0x0C); // Display On, Cursor Off, Blick Off
+	COMANDO_LCD(0x01); // Clear
 	_delay_ms(2);
+	COMANDO_LCD(0x06); // Incrementar Cursor Derecha
+	
 }
 
-// Limpiar display
-void LCD_Clear(void) {
-	LCD_Command(0x01);
-	_delay_ms(2);
+void COMANDO_LCD(uint8_t COMANDO){
+	
+	RS_0();				//RS = 0
+	WR_WRITE();			//WR = 0
+	LCD_PORT(COMANDO);	// Manda los comandos a LCD_PORT
+	LCD_LECTURA();
 }
 
-// Posicionar cursor
-void LCD_SetCursor(uint8_t col, uint8_t row) {
-	uint8_t address = (row == 0) ? 0x80 + col : 0xC0 + col;
-	LCD_Command(address);
+void LCD_WRITE_CHAR(char DATO){
+	
+	RS_1();			//RS = 1
+	WR_WRITE();		//WR = 0
+	LCD_PORT(DATO);	// Manda los datos a LCD_PORT
+	LCD_LECTURA();
 }
 
-// Imprimir string
-void LCD_PrintString(const char *str) {
-	while (*str) {
-		LCD_Data(*str++);
+void LCD_WRITE_STRING(char *TEXTO){
+	
+	while(*TEXTO){
+		LCD_WRITE_CHAR(*TEXTO);
+		TEXTO++;
+
 	}
+	
+}
+
+void CURSOR(uint8_t FILA, uint8_t COLUMNA){
+	
+	uint8_t LOCATION = 0;
+	if(FILA == 0){
+		LOCATION = 0x80 + COLUMNA;
+		
+	}
+	
+	else
+	{
+		LOCATION = 0xC0 + COLUMNA;
+		
+	}
+	COMANDO_LCD(LOCATION);
+	
+	
 }
